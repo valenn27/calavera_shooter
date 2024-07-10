@@ -1,38 +1,62 @@
-import pygame, json, os 
+import pygame, json, os
 from settings import * 
 from sys import *
 from random import randrange
 
 
 pygame.init()
+try: 
+    SCREEN = pygame.display.set_mode(SCREEN_SIZE)
+    pygame.display.set_caption('calavera shooter')
+except pygame.error as e: 
+    print(f'error al iniciar el programa')
+    
 
-SCREEN = pygame.display.set_mode(SCREEN_SIZE)
-pygame.display.set_caption('calavera shooter')
 
 # fondo
-fondo = pygame.image.load('src/imagenes/pasto.png')
+try: 
+    fondo = pygame.image.load('src/imagenes/pasto.png')
+except pygame.error as e: 
+    print(f'error al cargar el fondo')
+
 
 # icono de juego
-icono = pygame.image.load('src/imagenes/calavera.png')
-pygame.display.set_icon(icono)
+try: 
+    icono = pygame.image.load('src/imagenes/calavera.png')
+    pygame.display.set_icon(icono)
+except pygame.error as e: 
+    print(f'error al cargar el icono')
+
 
 # musica de fondo
-pygame.mixer.music.load('src/musica/musica_doom.mp3')
-pygame.mixer.music.play(-1)
-pygame.mixer.music.set_volume(0.4)
+try: 
+    pygame.mixer.music.load('src/musica/musica_doom.mp3')
+    pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(0.3)
+except pygame.error as e: 
+    print(f'error al cargar la musica')
+
+
 
 # sonidos
-impacto = pygame.mixer.Sound("src/musica/hitmarker.mp3")
-gun_sound1 = pygame.mixer.Sound("src/musica/gun1.mp3")
-gun_sound1.set_volume(0.2)
-minecraf_sonido = pygame.mixer.Sound("src/musica/minecrafthit.mp3")
-minecraf_sonido.set_volume(0.4)
+try: 
+    impacto = pygame.mixer.Sound("src/musica/hitmarker.mp3")
+    gun_sound1 = pygame.mixer.Sound("src/musica/gun1.mp3")
+    gun_sound1.set_volume(0.2)
+    minecraf_sonido = pygame.mixer.Sound("src/musica/minecrafthit.mp3")
+    minecraf_sonido.set_volume(0.4)
+except pygame.error as e: 
+    print(f'error al cargar los sonidos')
+
 
 # imagenes para el audio
-subir_volumen = pygame.image.load('src/imagenes/subir_volumen.png')
-bajar_volumen = pygame.image.load('src/imagenes/bajar_volumen.png')
-maximo_volumen = pygame.image.load('src/imagenes/maximo_volumen.png')
-mute_volumen = pygame.image.load('src/imagenes/mute_volumen.png')
+try:
+    subir_volumen = pygame.image.load('src/imagenes/subir_volumen.png')
+    bajar_volumen = pygame.image.load('src/imagenes/bajar_volumen.png')
+    maximo_volumen = pygame.image.load('src/imagenes/maximo_volumen.png')
+    mute_volumen = pygame.image.load('src/imagenes/mute_volumen.png')
+except pygame.error as e: 
+    print(f'error al cargar las imagenes')
 
 
 def mostrar_texto(pantalla:pygame.display, fuente:str, texto:str, color:tuple[int,int,int], dimensiones:int, x:int, y:int) -> None:
@@ -84,7 +108,7 @@ jugador = {
     'ultimo_tiro': pygame.time.get_ticks(),
     'invencible': False
 }
-jugador['image'].fill(BLUE)
+jugador['image'] = pygame.transform.scale(pygame.image.load('src/imagenes/personaje.png'), (80,80))
 jugador['rect'] = jugador['image'].get_rect(center=(400, 500))
 
 
@@ -125,8 +149,8 @@ def crear_bala(x:int, y:int, mouse_x:int, mouse_y:int) -> None:
     bala = {
         'image': pygame.Surface((10, 10)),
         'rect': None,
-        'velocidad_x': (mouse_x - x) / 6,
-        'velocidad_y': (mouse_y - y) / 6
+        'velocidad_x': (mouse_x - x) / 5,
+        'velocidad_y': (mouse_y - y) / 5
     }
 
     pygame.draw.circle(bala['image'], WHITE, (5,5), 5)
@@ -200,9 +224,9 @@ def actualizar_jugador() -> None:
 
 
 
+
     jugador['rect'].x += jugador['velocidad_x']
     jugador['rect'].y += jugador['velocidad_y']
-
 
 
     if jugador['rect'].left <= 0:
