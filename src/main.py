@@ -10,10 +10,10 @@ def guardar_puntuaciones(puntuacion: int) -> None:
     Returns:
         None
     """
-    file_exists = os.path.isfile("ranking_puntuaciones.csv")
+    archivo_existente = os.path.isfile("ranking_puntuaciones.csv")
     puntajes = []
 
-    if file_exists:
+    if archivo_existente:
         puntajes = cargar_puntuaciones()
 
     if len(puntajes) < 5:
@@ -44,10 +44,8 @@ def cargar_puntuaciones() -> list:
             lineas = archivo.readlines()
             for linea in lineas[1:]:
                 puntajes.append(linea.strip())
-
-
-                
-    return ordenar_puntaje(puntajes)
+      
+    return puntajes
 
 
 scores = cargar_puntuaciones()
@@ -228,6 +226,8 @@ while ejecucion:
                         ejecucion = False
                     else:
                         menu_inicio = True
+                        guardar_puntuaciones(puntuacion)
+                        scores = cargar_puntuaciones()
             
 
             if event.type == pygame.MOUSEBUTTONDOWN:

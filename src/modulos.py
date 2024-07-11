@@ -188,7 +188,7 @@ def crear_bala(x:int, y:int, mouse_x:int, mouse_y:int) -> None:
 
 
 def crear_poder_dios() -> dict:
-    """Crear un poder de invencibilidad.
+    """crear un poder de invencibilidad.
 
     Returns:
         dict: retorna un diccionario con la información del poder.
