@@ -12,17 +12,43 @@ except pygame.error as e:
     print(f'error al iniciar el programa')
     
 
+def cargar_configuracion_desde_json(ruta_archivo: str) -> dict: 
+    """
+    carga la configuración desde un archivo JSON.
+
+    Args:
+        ruta_archivo (str): ruta del archivo JSON que contiene la configuración.
+
+    Returns:
+        dict: configuración cargada desde el archivo JSON, representada como un diccionario.
+    """
+    with open(ruta_archivo, 'r') as archivo:
+        configuracion = json.load(archivo)
+    return configuracion
+
+
+configuracion = cargar_configuracion_desde_json('src/config.json')
+
+imagenes = {}
+sonidos = {}
+
+for elemento in configuracion:
+    if elemento['tipo'] == 'imagen':
+        imagenes[elemento['nombre']] = pygame.image.load(elemento['ruta'])
+    elif elemento['tipo'] == 'sonido':
+        sonidos[elemento['nombre']] = pygame.mixer.Sound(elemento['ruta'])
+
 
 # fondo
 try: 
-    fondo = pygame.image.load('src/imagenes/pasto.png')
+    fondo = imagenes['fondo']
 except pygame.error as e: 
     print(f'error al cargar el fondo')
 
 
 # icono de juego
 try: 
-    icono = pygame.image.load('src/imagenes/calavera.png')
+    icono = imagenes['icono']
     pygame.display.set_icon(icono)
 except pygame.error as e: 
     print(f'error al cargar el icono')
@@ -30,9 +56,9 @@ except pygame.error as e:
 
 # musica de fondo
 try: 
-    pygame.mixer.music.load('src/musica/musica_doom.mp3')
-    pygame.mixer.music.play(-1)
-    pygame.mixer.music.set_volume(0.3)
+    musica_fondo = sonidos['musica_fondo']
+    musica_fondo.play(-1)
+    musica_fondo.set_volume(0.3)
 except pygame.error as e: 
     print(f'error al cargar la musica')
 
@@ -40,10 +66,10 @@ except pygame.error as e:
 
 # sonidos
 try: 
-    impacto = pygame.mixer.Sound("src/musica/hitmarker.mp3")
-    gun_sound1 = pygame.mixer.Sound("src/musica/gun1.mp3")
+    impacto = sonidos['impacto']
+    gun_sound1 = sonidos['gun_sound1']
     gun_sound1.set_volume(0.2)
-    minecraf_sonido = pygame.mixer.Sound("src/musica/minecrafthit.mp3")
+    minecraf_sonido = sonidos['minecraf_sonido']
     minecraf_sonido.set_volume(0.4)
 except pygame.error as e: 
     print(f'error al cargar los sonidos')
@@ -51,12 +77,14 @@ except pygame.error as e:
 
 # imagenes para el audio
 try:
-    subir_volumen = pygame.image.load('src/imagenes/subir_volumen.png')
-    bajar_volumen = pygame.image.load('src/imagenes/bajar_volumen.png')
-    maximo_volumen = pygame.image.load('src/imagenes/maximo_volumen.png')
-    mute_volumen = pygame.image.load('src/imagenes/mute_volumen.png')
+    subir_volumen = imagenes['subir_volumen']
+    bajar_volumen = imagenes['bajar_volumen']
+    maximo_volumen = imagenes['maximo_volumen']
+    mute_volumen = imagenes['mute_volumen']
 except pygame.error as e: 
     print(f'error al cargar las imagenes')
+
+
 
 
 def mostrar_texto(pantalla:pygame.display, fuente:str, texto:str, color:tuple[int,int,int], dimensiones:int, x:int, y:int) -> None:
@@ -108,7 +136,7 @@ jugador = {
     'ultimo_tiro': pygame.time.get_ticks(),
     'invencible': False
 }
-jugador['image'] = pygame.transform.scale(pygame.image.load('src/imagenes/personaje.png'), (80,80))
+jugador['image'] = pygame.transform.scale(imagenes['personaje'], (80,80))
 jugador['rect'] = jugador['image'].get_rect(center=(400, 500))
 
 
@@ -170,7 +198,7 @@ def crear_poder_dios() -> dict:
         'rect': None,
         'tipo': 'dios'
     }
-    poder['image'] = pygame.transform.scale(pygame.image.load('src/imagenes/escudo.png'), (50,50))
+    poder['image'] = pygame.transform.scale(imagenes['escudo'], (50,50))
     poder['rect'] = poder['image'].get_rect()
     poder['rect'].x = randrange(WIDTH - poder['rect'].width)
     poder['rect'].y = randrange(HEIGHT - poder['rect'].width)
@@ -189,7 +217,7 @@ def crear_poder_tiro() -> dict:
         'rect': None,
         'tipo': 'tiro'
     }
-    poder['image'] = pygame.transform.scale(pygame.image.load('src/imagenes/bala_rapida.png'), (70,70))
+    poder['image'] = pygame.transform.scale(imagenes['bala_rapida'], (70,70))
     poder['rect'] = poder['image'].get_rect()
     poder['rect'].x = randrange(WIDTH - poder['rect'].width)
     poder['rect'].y = randrange(HEIGHT - poder['rect'].width)
@@ -331,3 +359,27 @@ def dibujar_boton_imagen(pantalla, x:int, y:int, image:pygame.image) -> pygame.R
     pantalla.blit(image, boton_rect)
 
     return boton_rect
+
+
+def swap_lista(lista:list, i:int, j:int):
+    aux = lista[i]
+    lista[i] = lista[j]
+    lista[j] = aux  
+
+
+def ordenar_puntaje(puntuacion: list) -> list:
+    """
+    ordena los puntajes de manera descendente.
+
+    Args:
+        puntuacion (list): La lista de puntajes.
+
+    Returns:
+        list: retorna la lista de puntajes ordenada.
+    """
+    for i in range(len(puntuacion)):
+        for j in range(i + 1, len(puntuacion)):
+            if int(puntuacion[i]) < int(puntuacion[j]):
+                swap_lista(puntuacion, i, j)
+
+    return puntuacion[:5]

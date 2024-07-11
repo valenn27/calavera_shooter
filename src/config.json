@@ -1,0 +1,83 @@
+[
+    {
+      "tipo": "imagen",
+      "nombre": "fondo",
+      "ruta": "src/imagenes/pasto.png"
+    },
+    {
+      "tipo": "imagen",
+      "nombre": "icono",
+      "ruta": "src/imagenes/calavera.png"
+    },
+    {
+      "tipo": "imagen",
+      "nombre": "subir_volumen",
+      "ruta": "src/imagenes/subir_volumen.png"
+    },
+    {
+      "tipo": "imagen",
+      "nombre": "bajar_volumen",
+      "ruta": "src/imagenes/bajar_volumen.png"
+    },
+    {
+      "tipo": "imagen",
+      "nombre": "maximo_volumen",
+      "ruta": "src/imagenes/maximo_volumen.png"
+    },
+    {
+      "tipo": "imagen",
+      "nombre": "mute_volumen",
+      "ruta": "src/imagenes/mute_volumen.png"
+    },
+    {
+      "tipo": "imagen",
+      "nombre": "personaje",
+      "ruta": "src/imagenes/personaje.png"
+    },
+    {
+      "tipo": "imagen",
+      "nombre": "calavera",
+      "ruta": "src/imagenes/calavera.png"
+    },
+    {
+      "tipo": "imagen",
+      "nombre": "escudo",
+      "ruta": "src/imagenes/escudo.png"
+    },
+    {
+      "tipo": "imagen",
+      "nombre": "bala_rapida",
+      "ruta": "src/imagenes/bala_rapida.png"
+    },
+    {
+      "tipo": "imagen",
+      "nombre": "start",
+      "ruta": "src/imagenes/start.png"
+    },
+    {
+      "tipo": "imagen",
+      "nombre": "salir",
+      "ruta": "src/imagenes/salir.png"
+    },
+    {
+      "tipo": "sonido",
+      "nombre": "musica_fondo",
+      "ruta": "src/musica/musica_doom.mp3"
+    },
+    {
+      "tipo": "sonido",
+      "nombre": "impacto",
+      "ruta": "src/musica/hitmarker.mp3"
+    },
+    {
+      "tipo": "sonido",
+      "nombre": "gun_sound1",
+      "ruta": "src/musica/gun1.mp3"
+    },
+    {
+      "tipo": "sonido",
+      "nombre": "minecraf_sonido",
+      "ruta": "src/musica/minecrafthit.mp3"
+    }
+  ]
+  

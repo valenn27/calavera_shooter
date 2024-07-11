@@ -1,47 +1,74 @@
 from modulos import *
 
-
-
-def cargar_puntuacion_maxima() -> None: 
+def guardar_puntuaciones(puntuacion: int) -> None:
     """
-    Carga la puntuación máxima desde un archivo JSON y la almacena en la variable global 'puntuacion_maxima'.
-    Si el archivo no existe, inicializa 'puntuacion_maxima' en 0
+    guarda el puntaje del jugador en un archivo CSV, manteniendo solo los 5 puntajes más altos.
 
+    Args:
+        puntuacion (int): el puntaje del jugador.
+
+    Returns:
+        None
     """
-    global puntuacion_maxima
-    ruta_archivo = 'puntuacion_maxima.json'
-    if os.path.exists(ruta_archivo):
-        with open(ruta_archivo, 'r') as archivo:
-            data = json.load(archivo)
-            puntuacion_maxima = data['puntuacion_maxima']
+    file_exists = os.path.isfile("ranking_puntuaciones.csv")
+    puntajes = []
+
+    if file_exists:
+        puntajes = cargar_puntuaciones()
+
+    if len(puntajes) < 5:
+        puntajes.append(puntuacion)
     else:
-        puntuacion_maxima = 0
-
-def guardar_puntuacion_maxima() -> None:
-    """Guarda la puntuación máxima en un archivo JSON desde la variable global 'puntuacion_maxima'. """
-    global puntuacion_maxima
-    ruta_archivo = 'puntuacion_maxima.json'
-    with open(ruta_archivo, 'w') as archivo:
-        json.dump({'puntuacion_maxima': puntuacion_maxima}, archivo)
-
-cargar_puntuacion_maxima()
+        puntuaciones_altas = int(puntajes[0])
+        if puntuacion > puntuaciones_altas:
+            puntajes.insert(0, puntuacion)
+            puntajes = puntajes[:5]
 
 
+    with open("ranking_puntuaciones.csv", "w") as archivo:
+        archivo.write("puntaje\n")
+        for i in puntajes:
+            archivo.write(f'{i}\n')
+
+
+def cargar_puntuaciones() -> list:
+    """
+    carga los puntajes desde un archivo CSV y devuelve los 5 puntajes más altos.
+
+    Returns:
+        list: retorna una lista con los puntajes.
+    """
+    puntajes = []
+    if os.path.isfile('ranking_puntuaciones.csv'):
+        with open('ranking_puntuaciones.csv', 'r') as archivo: 
+            lineas = archivo.readlines()
+            for linea in lineas[1:]:
+                puntajes.append(linea.strip())
+
+
+                
+    return ordenar_puntaje(puntajes)
+
+
+scores = cargar_puntuaciones()
 
 
 # ---------------------------------- PUNTAJE ------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------- COLISIONES -----------------------------------------------------------------------------------
+poder_dios = False
+poder_tiro = False
+tiempo_poder_inicio = 0 
 
 
 def colisiones() -> None:
     """Manejar las colisiones entre el jugador, las balas, los enemigos, los poderes. y maneja el puntaje"""
-    global puntuacion, game_over, puntuacion_maxima
+    global puntuacion, game_over, puntuacion_maxima, poder_dios, poder_tiro, tiempo_poder_inicio
     balas_copia = []
     enemigos_copia = []
     poderes_copia = []
-
+   
     for enemigo in enemigos:
         if detectar_colision_circulo(jugador['rect'], enemigo['rect']) and not jugador['invencible']:
             jugador['vida'] -= 1
@@ -95,15 +122,19 @@ def colisiones() -> None:
         if detectar_colision_circulo(jugador['rect'], poder['rect']):
             if poder['tipo'] == 'dios':
                 jugador['invencible'] = True
+                poder_dios = True
+                tiempo_poder_inicio = pygame.time.get_ticks()
                 poderes_copia.append(poder)
-                pygame.time.set_timer(pygame.USEREVENT + 1, 10000)
+            
 
 
 
             elif poder['tipo'] == 'tiro':
                 jugador['cadencia'] = 20
+                poder_tiro = True
+                tiempo_poder_inicio = pygame.time.get_ticks()
                 poderes_copia.append(poder)
-                pygame.time.set_timer(pygame.USEREVENT + 2, 10000)
+
 
 
             if poder not in poderes_copia:
@@ -121,6 +152,23 @@ def colisiones() -> None:
     for poder in poderes_copia:
         if poder in poderes:
             poderes.remove(poder)
+
+    if poder_dios:
+        tiempo_actual = pygame.time.get_ticks()
+        if tiempo_actual - tiempo_poder_inicio <= 10000:
+            mostrar_texto(SCREEN, sans_serif, 'invencibilidad activada', WHITE, 20,670,550)
+        else:
+            poder_dios = False
+            jugador['invencible'] = False
+    
+    if poder_tiro:
+        tiempo_actual = pygame.time.get_ticks()
+        if tiempo_actual - tiempo_poder_inicio <= 10000:
+            mostrar_texto(SCREEN, sans_serif, 'disparo rapido activado', WHITE, 20,670,580)
+        else:
+            poder_tiro = False
+            jugador['cadencia'] = 150
+
 
 
     if puntuacion > puntuacion_maxima:
@@ -153,13 +201,13 @@ while ejecucion:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 ejecucion = False
-                guardar_puntuacion_maxima()
+                guardar_puntuaciones(puntuacion)
 
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     if  game_over:
-                        pygame.mixer.music.play(-1)
+                        musica_fondo.play(-1)
                         jugador['vida'] = 100
                         jugador['cantidad_vidas'] = 3
                         jugador['rect'].center = (400, 500)
@@ -185,7 +233,7 @@ while ejecucion:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if menu_inicio: 
                     if boton_start.collidepoint(event.pos):
-                        pygame.mixer.music.play(-1)
+                        musica_fondo.play(-1)
                         jugador['vida'] = 100
                         jugador['cantidad_vidas'] = 3
                         jugador['rect'].center = (400, 500)
@@ -209,21 +257,22 @@ while ejecucion:
 
                 poderes.append(poder)
 
-            if event.type == pygame.USEREVENT + 1:
-                jugador['invencible'] = False
 
 
-            elif event.type == pygame.USEREVENT + 2:
-                jugador['cadencia'] = 150
+
+                    
     except pygame.error as e:
         print(f"error al procesar eventos")
 
     
 
     if menu_inicio:
+
         pygame.mixer.music.stop()
         pygame.mixer.stop()
-        guardar_puntuacion_maxima()
+        guardar_puntuaciones(puntuacion)
+
+
 
 
 
@@ -231,12 +280,20 @@ while ejecucion:
         mostrar_texto(SCREEN, sans_serif, "CALAVERA SHOOTER", WHITE, 40, 400, 100)
         
     
-        imagen_start = pygame.transform.scale(pygame.image.load('src/imagenes/start.png'), (300,150))
-        imagen_salir = pygame.transform.scale(pygame.image.load('src/imagenes/salir.png'), (400,200))
+        imagen_start = pygame.transform.scale(imagenes['start'], (300,150))
+        imagen_salir = pygame.transform.scale(imagenes['salir'], (400,200))
         boton_start = dibujar_boton_imagen(SCREEN, 255,200, imagen_start)
         boton_salir = dibujar_boton_imagen(SCREEN, 200,350, imagen_salir)
 
-   
+        if scores: 
+            mostrar_texto(SCREEN, sans_serif, 'ranking de puntuaciones', WHITE, 15, 700,420)
+            y = 450
+            posicion = 1
+            for i in scores:
+                mostrar_texto(SCREEN, sans_serif, f"{posicion}. {i}", WHITE, 15, 700, y)
+                y += 30
+                posicion += 1
+               
 
     
     if not menu_inicio:
@@ -324,7 +381,9 @@ while ejecucion:
         if game_over:
             pygame.mixer.music.stop()
             pygame.mixer.stop()
-            guardar_puntuacion_maxima()
+            guardar_puntuaciones(puntuacion)
+
+
 
             for enemigo in enemigos[:]:
                 enemigos.remove(enemigo)
