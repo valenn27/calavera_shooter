@@ -367,7 +367,7 @@ def swap_lista(lista:list, i:int, j:int):
     lista[j] = aux  
 
 
-def ordenar_puntaje(puntuacion: list) -> list:
+def ordenar_puntaje(puntuacion:list) -> list:
     """
     ordena los puntajes de manera descendente.
 

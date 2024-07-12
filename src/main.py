@@ -24,9 +24,9 @@ def guardar_puntuaciones(puntuacion: int) -> None:
             puntajes.insert(0, puntuacion)
             puntajes = puntajes[:5]
 
-
+    
     with open("ranking_puntuaciones.csv", "w") as archivo:
-        archivo.write("puntaje\n")
+        archivo.write("Puntaje\n")
         for i in puntajes:
             archivo.write(f'{i}\n')
 
@@ -55,6 +55,10 @@ scores = cargar_puntuaciones()
 # -------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------- COLISIONES -----------------------------------------------------------------------------------
+
+
+
+
 poder_dios = False
 poder_tiro = False
 tiempo_poder_inicio = 0 
@@ -199,7 +203,7 @@ while ejecucion:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 ejecucion = False
-                guardar_puntuaciones(puntuacion)
+                guardar_puntuaciones(puntuacion_maxima)
 
 
             if event.type == pygame.KEYDOWN:
@@ -226,7 +230,7 @@ while ejecucion:
                         ejecucion = False
                     else:
                         menu_inicio = True
-                        guardar_puntuaciones(puntuacion)
+                        guardar_puntuaciones(puntuacion_maxima)
                         scores = cargar_puntuaciones()
             
 
@@ -270,7 +274,7 @@ while ejecucion:
 
         pygame.mixer.music.stop()
         pygame.mixer.stop()
-        guardar_puntuaciones(puntuacion)
+        guardar_puntuaciones(puntuacion_maxima)
 
 
 
@@ -381,7 +385,7 @@ while ejecucion:
         if game_over:
             pygame.mixer.music.stop()
             pygame.mixer.stop()
-            guardar_puntuaciones(puntuacion)
+            guardar_puntuaciones(puntuacion_maxima)
 
 
 
